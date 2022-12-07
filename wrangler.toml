@@ -1,0 +1,6 @@
+name = "discord-calendar-bot"
+main = "src/index.ts"
+compatibility_date = "2022-12-07"
+
+[triggers]
+crons = [ "1 * * * *" ]
