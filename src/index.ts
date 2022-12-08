@@ -13,7 +13,7 @@
 export interface Env {
     DISCORD_API_TOKEN: string;
     DISCORD_GUILD_ID: string;
-    DISCORD_ANNOUNCEMENTS_CHANNEL_ID: string;
+    DISCORD_ANNOUNCEMENTS_CHANNEL_ID: number;
 }
 
 export interface ScheduledEvent {
@@ -30,13 +30,19 @@ export default {
         ctx: ExecutionContext
     ): Promise<void> {
         console.log(`Starting the bot...`);
-        if (env.DISCORD_API_TOKEN.length === 0) {
+        if (
+            env.DISCORD_API_TOKEN === null ||
+            env.DISCORD_API_TOKEN.length === 0
+        ) {
             throw new Error(`Failed to find Discord API token`);
         }
-        if (env.DISCORD_GUILD_ID.length === 0) {
+        if (
+            env.DISCORD_GUILD_ID === null ||
+            env.DISCORD_GUILD_ID.length === 0
+        ) {
             throw new Error(`Failed to find Discord guild ID`);
         }
-        if (env.DISCORD_GUILD_ID.length === 0) {
+        if (env.DISCORD_ANNOUNCEMENTS_CHANNEL_ID === null) {
             throw new Error(`Failed to find Discord announcements channel ID`);
         }
 
@@ -75,10 +81,10 @@ export default {
                 );
             }
         });
-        await messages;
+        await Promise.all(messages);
     },
     async message(event: ScheduledEvent, env: Env): Promise<void> {
-        const message_announcements_url = `https://discord.com/api/v10/channels/1023108581526077550/messages`;
+        const message_announcements_url = `https://discord.com/api/v10/channels/${env.DISCORD_ANNOUNCEMENTS_CHANNEL_ID}/messages`;
         let content = `"${event.name}" is coming up tomorrow!`;
         if (event.description != null) {
             content += ` Here's the description:\n${event.description}`;
