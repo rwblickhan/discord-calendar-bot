@@ -13,7 +13,7 @@
 export interface Env {
     DISCORD_API_TOKEN: string;
     DISCORD_GUILD_ID: string;
-    DISCORD_ANNOUNCEMENTS_CHANNEL_ID: number;
+    DISCORD_ANNOUNCEMENTS_CHANNEL_ID: string;
 }
 
 export interface ScheduledEvent {
