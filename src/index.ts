@@ -122,7 +122,10 @@ export default {
         const message_announcements_url = `https://discord.com/api/v10/channels/${env.DISCORD_ANNOUNCEMENTS_CHANNEL_ID}/messages`;
         const event_time = new Date(
             event.scheduled_start_time
-        ).toLocaleTimeString("en-US", { timeStyle: "short" });
+        ).toLocaleTimeString("en-US", {
+            timeStyle: "short",
+            timeZone: "America/Los_Angeles",
+        });
         let content = `"${event.name}" is coming up tomorrow at ${event_time}`;
         if (
             event.entity_metadata != null &&
