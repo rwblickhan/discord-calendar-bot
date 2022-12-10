@@ -87,28 +87,36 @@ export default {
         }
         const scheduled_events_json =
             (await scheduled_events_response.json()) as ScheduledEvent[];
-        const now = new Date();
-        const tomorrow = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate() + 1
-        );
-        const messages = scheduled_events_json.map((event) => {
-            const event_date = new Date(event.scheduled_start_time);
+        // Assumes a 9pm run time
+        const tomorrow_start_millis = Date.now() + 1000 * 60 * 60 * 3; // 1000ms * 60s * 60m * 3hr
+        const tomorrow_end_millis = Date.now() + 1000 * 60 * 60 * 27; // 1000ms * 60s * 60m * 27hr
+
+        const events_to_message = scheduled_events_json.filter((event) => {
+            const event_time_millis = Date.parse(event.scheduled_start_time);
             if (
-                tomorrow.getFullYear() == event_date.getFullYear() &&
-                tomorrow.getMonth() == event_date.getMonth() &&
-                tomorrow.getDate() == event_date.getDate()
+                tomorrow_start_millis < event_time_millis &&
+                event_time_millis < tomorrow_end_millis
             ) {
                 console.log(`Posting message for event ${event.name}`);
-                return this.message(event, sentry, env);
+                return true;
             } else {
                 console.log(
                     `Skipping event ${event.name} since it's not tomorrow`
                 );
+                return false;
             }
         });
-        await Promise.all(messages);
+        events_to_message.sort((first_event, second_event) => {
+            return Date.parse(first_event.scheduled_start_time) <
+                Date.parse(second_event.scheduled_start_time)
+                ? -1
+                : 1;
+        });
+        await Promise.all(
+            events_to_message.map((event) => {
+                return this.message(event, sentry, env);
+            })
+        );
     },
     async message(
         event: ScheduledEvent,
