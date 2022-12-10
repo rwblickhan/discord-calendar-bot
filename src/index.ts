@@ -23,6 +23,7 @@ export interface ScheduledEvent {
     id: string;
     name: string;
     description?: string;
+    entity_metadata?: { location?: string };
     scheduled_start_time: string;
 }
 
@@ -122,9 +123,17 @@ export default {
         const event_time = new Date(
             event.scheduled_start_time
         ).toLocaleTimeString("en-US", { timeStyle: "short" });
-        let content = `"${event.name}" is coming up tomorrow at ${event_time}!`;
+        let content = `"${event.name}" is coming up tomorrow at ${event_time}`;
+        if (
+            event.entity_metadata != null &&
+            event.entity_metadata.location != null
+        ) {
+            content += ` at ${event.entity_metadata.location}!`;
+        } else {
+            content += "!";
+        }
         if (event.description != null) {
-            content += ` Here's the description:\n${event.description}`;
+            content += ` Here's the description:\n> ${event.description}`;
         }
         const message_response = await fetch(message_announcements_url, {
             headers: {
