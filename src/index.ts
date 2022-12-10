@@ -144,7 +144,10 @@ export default {
             content += "!";
         }
         if (event.description != null) {
-            content += ` Here's the description:\n> ${event.description}`;
+            content += ` Here's the description:\n> ${event.description.replaceAll(
+                "\n",
+                "\n> "
+            )}`;
         }
         const message_response = await fetch(message_announcements_url, {
             headers: {
